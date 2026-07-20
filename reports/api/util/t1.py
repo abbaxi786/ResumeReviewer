@@ -264,17 +264,26 @@ def ScoringMatrics(
 
     total = skillScore + experienceScore + keywordScore
 
+    if requiredExperience-candidateExperience >= 1:
+         Suggestion = {
+              "ExperienceSuggestion": f"Required {requiredExperience-candidateExperience} years"
+         }
+
+
+
     return {
         "SkillScore": round(skillScore, 2),
         "ExperienceScore": round(experienceScore, 2),
         "KeywordScore": round(keywordScore, 2),
         "TotalResumeScore": round(total, 2),
+        "Suggestion":     Suggestion
     }
 
 def ScoringSkillMetrics(foundSkills,RequiredSkills):
      matchedSkills = [skill for skill in foundSkills if skill in RequiredSkills]
-     scores = min(len(matchedSkills)/len(RequiredSkills),1)*100
-     return {"SkillScoresFromRequired": scores}
+     NotmatchedSkills = [skill for skill in RequiredSkills if skill not in foundSkills]
+     scores = min(len(matchedSkills)/len(RequiredSkills),1)*100 if RequiredSkills else 0
+     return {"SkillScoresFromRequired": scores,"Match_Skills":matchedSkills,"Not_Matched_Skills":NotmatchedSkills}
 
 
 

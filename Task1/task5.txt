@@ -124,3 +124,141 @@ Response
         }
     }
 }
+
+
+POST  POST http://127.0.0.1:8000/api/file/
+
+Form-data
+
+Key                  Type    Value
+file                (File)  Resume.docx
+requiredExperience  (Text)  3
+requiredSkills      (Text)  ["python","django","sql","git","docker","c","next","nuxt"]
+
+
+Response 
+{
+    "message": "File uploaded successfully.",
+    "filename": "FirstText_1HKZcFm.docx",
+    "url": "/media/FirstText_1HKZcFm.docx",
+    "textInfo": {
+        "Text": "John Smith Email: johnsmith@gmail.com Phone: +1 555 123 4567 Software Engineer Experience: Worked as a Python Developer for 4 years. Skills: Python Django SQL Git Docker AWS React REST API Worked in Agile teams. Developed backend APIs using Django. Worked with PostgreSQL databases. Designed scalable software solutions. Strong debugging and testing experience. Worked at ABC Technologies from 2020 to 2024.",
+        "Words": 60,
+        "Characters": 348,
+        "LematizedWords": [
+            "scalable",
+            "aws",
+            "smith",
+            "skills",
+            "api",
+            "developer",
+            "debug",
+            "2020",
+            "postgresql",
+            "solutions",
+            "4567",
+            "john",
+            "react",
+            "email",
+            "use",
+            "strong",
+            "abc",
+            "agile",
+            "technologies",
+            "experience",
+            "software",
+            "phone",
+            "apis",
+            "work",
+            "sql",
+            "develop",
+            "123",
+            "backend",
+            "python",
+            "docker",
+            "test",
+            "1",
+            "4",
+            "years",
+            "git",
+            "johnsmithgmailcom",
+            "rest",
+            "team",
+            "databases",
+            "engineer",
+            "2024",
+            "django",
+            "design",
+            "555"
+        ],
+        "PersonSkills": [
+            "sql",
+            "aws",
+            "python",
+            "docker",
+            "django",
+            "postgresql",
+            "git",
+            "react"
+        ],
+        "PersonData": [
+            {
+                "label": "PERSON",
+                "text": "John Smith"
+            },
+            {
+                "label": "PERSON",
+                "text": "Phone"
+            },
+            {
+                "label": "DATE",
+                "text": "4 years"
+            },
+            {
+                "label": "NORP",
+                "text": "Agile"
+            },
+            {
+                "label": "PERSON",
+                "text": "Django"
+            },
+            {
+                "label": "GPE",
+                "text": "PostgreSQL"
+            },
+            {
+                "label": "ORG",
+                "text": "ABC Technologies"
+            },
+            {
+                "label": "DATE",
+                "text": "2020"
+            }
+        ],
+        "ResumeScores": {
+            "SkillScore": 8.0,
+            "ExperienceScore": 32.0,
+            "KeywordScore": 10.5,
+            "TotalResumeScore": 50.5,
+            "Suggestion": {
+                "ExperienceSuggestion": "Required 1 years"
+            }
+        },
+        "SkillsRequiredScores": {
+            "SkillScoresFromRequired": 66.66666666666666,
+            "Match_Skills": [
+                "sql",
+                "python",
+                "docker",
+                "django",
+                "git",
+                "react"
+            ],
+            "Not_Matched_Skills": [
+                "c",
+                "next",
+                "nuxt"
+            ]
+        }
+    }
+}
