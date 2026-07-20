@@ -43,6 +43,29 @@ tech_skills = [
     "azure"
 ]
 
+KEYWORDS = [
+    "api",
+    "rest",
+    "agile",
+    "testing",
+    "deployment",
+    "backend",
+    "frontend",
+    "database",
+    "authentication",
+    "authorization",
+    "microservices",
+    "cloud",
+    "linux",
+    "debugging",
+    "oop",
+    "design",
+    "development",
+    "web",
+    "software",
+    "team"
+]
+
 # This function is use for check if the root exists and check if the extension is supported
 def CheckRoot(rootPath):        
     try:
@@ -118,7 +141,7 @@ def FromRTF(fileExt):
     
 # this function uses the text and make it in order form to give json 
 
-def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt):
+def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,requiredSkills):
 
     cleaned_text = re.sub(r'\s+', ' ', txt).strip()
     words = re.findall(r'\S+', cleaned_text)
@@ -127,26 +150,30 @@ def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt):
     NoOfChr = len(without_spaces_text)
     lematizedWords = WordLemmatizer(txt)
     GivenSkills = CheckSkills(lematizedWords)
+    keywordMatch = CheckKeywords(lematizedWords)
     entityData = ExtractEntity(cleaned_text)
+    experience = ExtractExperience(cleaned_text)
+    ResumeScoresOverall = ScoringMatrics(len(GivenSkills),len(tech_skills),experience,requiredExperience,len(KEYWORDS),len(keywordMatch))
+    skillScores = ScoringSkillMetrics(GivenSkills,requiredSkills)
     
 
     return {"Text": cleaned_text, "Words": numberOfWords, "Characters": NoOfChr,"LematizedWords":lematizedWords,
-            "PersonSkills":GivenSkills,"PersonData":entityData}
+            "PersonSkills":GivenSkills,"PersonData":entityData,"ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
 
 # this function uses the file and return output according to it extension 
 
-def AssignAccordingToExt(file):
+def AssignAccordingToExt(file,requiredExperience,requiredSkills):
      
     ext = GetExt(file)
 
     if ext == '.docx':
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file))
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,requiredSkills)
     elif ext == ".pdf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file))
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,requiredSkills)
     elif ext == ".txt":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file))
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,requiredSkills)
     elif ext == ".rtf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file))
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,requiredSkills)
     else:
         raise ValueError("Unsupported file type.")
     
@@ -185,6 +212,13 @@ def CheckSkills(LemmatizedWordList):
     checkedValue = [word for word in LemmatizedWordList if word in requiredSkills]
     return set(checkedValue)
 
+# this function is used for the keywords 
+
+def CheckKeywords(LemmatizedWordList):
+    keywords = KEYWORDS
+    checkedValue = [word for word in LemmatizedWordList if word in keywords]
+    return set(checkedValue)
+
 # this give text pick out the date locations and name form the text 
 
 def ExtractEntity(text):
@@ -195,12 +229,63 @@ def ExtractEntity(text):
     for entity in doc.ents:
         extractedData.append(
             {
-                "label": entity.label,
+                "label": entity.label_,
                 "text": entity.text
             }
         )
     return extractedData
 
+
+# ---------------------------The skills based functions --------------------------------------
+
+def ScoringMatrics(
+    foundSkills,
+    totalSkills,
+    candidateExperience,
+    requiredExperience,
+    totalKeywords,
+    foundKeywords,
+):
+
+    skillScore = (
+        min(foundSkills / totalSkills, 1) * 30
+        if totalSkills else 0
+    )
+
+    experienceScore = (
+        min(candidateExperience / requiredExperience, 1) * 40
+        if requiredExperience else 0
+    )
+
+    keywordScore = (
+        min(foundKeywords / totalKeywords, 1) * 30
+        if totalKeywords else 0
+    )
+
+    total = skillScore + experienceScore + keywordScore
+
+    return {
+        "SkillScore": round(skillScore, 2),
+        "ExperienceScore": round(experienceScore, 2),
+        "KeywordScore": round(keywordScore, 2),
+        "TotalResumeScore": round(total, 2),
+    }
+
+def ScoringSkillMetrics(foundSkills,RequiredSkills):
+     matchedSkills = [skill for skill in foundSkills if skill in RequiredSkills]
+     scores = min(len(matchedSkills)/len(RequiredSkills),1)*100
+     return {"SkillScoresFromRequired": scores}
+
+
+
+def ExtractExperience(text):
+
+    pattern = r'(\d+)\s*\+?\s*(?:years?|yrs?)'
+    matches = re.findall(pattern, text.lower())
+    if not matches:
+        return 0
+    years = [int(year) for year in matches]
+    return max(years)
 
 
 
