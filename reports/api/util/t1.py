@@ -6,6 +6,8 @@ import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import spacy
+import json
+
 
 nlp = spacy.load("en_core_web_sm")
 stop_words = set(stopwords.words("english"))
@@ -42,6 +44,55 @@ tech_skills = [
     "aws",
     "azure"
 ]
+
+ROLE_KEYWORDS = {
+
+    "python developer":[
+        "python",
+        "django",
+        "flask",
+        "fastapi",
+        "sql",
+        "postgresql",
+        "mysql",
+        "git",
+        "docker",
+        "aws",
+        "linux",
+        "rest api",
+        "unit testing",
+        "oop"
+    ],
+
+    "frontend developer":[
+        "html",
+        "css",
+        "javascript",
+        "typescript",
+        "react",
+        "nextjs",
+        "redux",
+        "tailwind",
+        "git",
+        "responsive design"
+    ],
+
+    "full stack developer":[
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "nextjs",
+        "node",
+        "express",
+        "mongodb",
+        "sql",
+        "docker",
+        "git",
+        "aws",
+        "rest api"
+    ]
+}
 
 KEYWORDS = [
     "api",
@@ -141,7 +192,7 @@ def FromRTF(fileExt):
     
 # this function uses the text and make it in order form to give json 
 
-def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,requiredSkills):
+def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role):
 
     cleaned_text = re.sub(r'\s+', ' ', txt).strip()
     words = re.findall(r'\S+', cleaned_text)
@@ -154,26 +205,32 @@ def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,requiredSk
     entityData = ExtractEntity(cleaned_text)
     experience = ExtractExperience(cleaned_text)
     ResumeScoresOverall = ScoringMatrics(len(GivenSkills),len(tech_skills),experience,requiredExperience,len(KEYWORDS),len(keywordMatch))
-    skillScores = ScoringSkillMetrics(GivenSkills,requiredSkills)
-    
+    requiredSkills = ROLE_KEYWORDS.get(role)
+    if requiredSkills is None:
+        raise ValueError(f"Unknown role: {role}")
+
+    skillScores = ScoringSkillMetrics(
+        GivenSkills,
+        requiredSkills
+    )    
 
     return {"Text": cleaned_text, "Words": numberOfWords, "Characters": NoOfChr,"LematizedWords":lematizedWords,
             "PersonSkills":GivenSkills,"PersonData":entityData,"ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
 
 # this function uses the file and return output according to it extension 
 
-def AssignAccordingToExt(file,requiredExperience,requiredSkills):
+def AssignAccordingToExt(file,requiredExperience,role):
      
     ext = GetExt(file)
 
     if ext == '.docx':
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,requiredSkills)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,role)
     elif ext == ".pdf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,requiredSkills)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,role)
     elif ext == ".txt":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,requiredSkills)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,role)
     elif ext == ".rtf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,requiredSkills)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,role)
     else:
         raise ValueError("Unsupported file type.")
     
@@ -246,6 +303,7 @@ def ScoringMatrics(
     totalKeywords,
     foundKeywords,
 ):
+    Suggestion= None
 
     skillScore = (
         min(foundSkills / totalSkills, 1) * 30
@@ -280,10 +338,14 @@ def ScoringMatrics(
     }
 
 def ScoringSkillMetrics(foundSkills,RequiredSkills):
+
+     if RequiredSkills is None:
+        raise ValueError("Unknown role supplied.")
      matchedSkills = [skill for skill in foundSkills if skill in RequiredSkills]
      NotmatchedSkills = [skill for skill in RequiredSkills if skill not in foundSkills]
      scores = min(len(matchedSkills)/len(RequiredSkills),1)*100 if RequiredSkills else 0
-     return {"SkillScoresFromRequired": scores,"Match_Skills":matchedSkills,"Not_Matched_Skills":NotmatchedSkills}
+     MistSkillWithSuggestions = LoadingSuggestionAndCheckingMissingTeckSkills(NotmatchedSkills)
+     return {"SkillScoresFromRequired": scores,"Match_Skills":matchedSkills,"Not_Matched_Skills":NotmatchedSkills,"MistSkillWithSuggestions":MistSkillWithSuggestions}
 
 
 
@@ -295,6 +357,32 @@ def ExtractExperience(text):
         return 0
     years = [int(year) for year in matches]
     return max(years)
+
+def LoadingSuggestionAndCheckingMissingTeckSkills(techSkills):
+    jsonValue = None
+    skillList = []  # <--- FIX: Changed from {} to [] to make it a list
+    
+    with open("api/util/suggestion.json", 'r', encoding="utf-8") as file:
+        jsonValue = json.load(file)
+
+    for skill in techSkills:
+        # Safely get suggestions from the "SUGGESTIONS" dictionary
+        # If a skill isn't in your JSON, this returns None instead of crashing
+        suggests = jsonValue.get("SUGGESTIONS", {}).get(skill)
+        
+        skillList.append({
+            "Skill": skill,
+            "Suggestions": suggests
+        })
+    
+    return skillList
+
+
+
+        
+
+    
+
 
 
 

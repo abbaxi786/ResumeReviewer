@@ -1,0 +1,171 @@
+POST  POST http://127.0.0.1:8000/api/file/
+
+Form-data
+
+Key                  Type    Value
+file                (File)  Resume.docx
+requiredExperience  (Text)  3
+role      (Text)    python developer
+
+Response
+
+{
+    "message": "File uploaded successfully.",
+    "filename": "FirstText_nQShmHk.docx",
+    "url": "/media/FirstText_nQShmHk.docx",
+    "textInfo": {
+        "Text": "John Smith Email: johnsmith@gmail.com Phone: +1 555 123 4567 Software Engineer Experience: Worked as a Python Developer for 4 years. Skills: Python Django SQL Git Docker AWS React REST API Worked in Agile teams. Developed backend APIs using Django. Worked with PostgreSQL databases. Designed scalable software solutions. Strong debugging and testing experience. Worked at ABC Technologies from 2020 to 2024.",
+        "Words": 60,
+        "Characters": 348,
+        "LematizedWords": [
+            "django",
+            "phone",
+            "design",
+            "developer",
+            "engineer",
+            "2024",
+            "develop",
+            "react",
+            "555",
+            "john",
+            "debug",
+            "docker",
+            "skills",
+            "software",
+            "use",
+            "test",
+            "strong",
+            "abc",
+            "python",
+            "agile",
+            "scalable",
+            "technologies",
+            "email",
+            "databases",
+            "sql",
+            "1",
+            "git",
+            "team",
+            "johnsmithgmailcom",
+            "experience",
+            "smith",
+            "work",
+            "123",
+            "aws",
+            "4567",
+            "4",
+            "apis",
+            "postgresql",
+            "rest",
+            "2020",
+            "years",
+            "api",
+            "backend",
+            "solutions"
+        ],
+        "PersonSkills": [
+            "django",
+            "python",
+            "git",
+            "aws",
+            "postgresql",
+            "sql",
+            "react",
+            "docker"
+        ],
+        "PersonData": [
+            {
+                "label": "PERSON",
+                "text": "John Smith"
+            },
+            {
+                "label": "PERSON",
+                "text": "Phone"
+            },
+            {
+                "label": "DATE",
+                "text": "4 years"
+            },
+            {
+                "label": "NORP",
+                "text": "Agile"
+            },
+            {
+                "label": "PERSON",
+                "text": "Django"
+            },
+            {
+                "label": "GPE",
+                "text": "PostgreSQL"
+            },
+            {
+                "label": "ORG",
+                "text": "ABC Technologies"
+            },
+            {
+                "label": "DATE",
+                "text": "2020"
+            }
+        ],
+        "ResumeScores": {
+            "SkillScore": 8.0,
+            "ExperienceScore": 32.0,
+            "KeywordScore": 10.5,
+            "TotalResumeScore": 50.5,
+            "Suggestion": {
+                "ExperienceSuggestion": "Required 1 years"
+            }
+        },
+        "SkillsRequiredScores": {
+            "SkillScoresFromRequired": 50.0,
+            "Match_Skills": [
+                "django",
+                "python",
+                "git",
+                "aws",
+                "postgresql",
+                "sql",
+                "docker"
+            ],
+            "Not_Matched_Skills": [
+                "flask",
+                "fastapi",
+                "mysql",
+                "linux",
+                "rest api",
+                "unit testing",
+                "oop"
+            ],
+            "MistSkillWithSuggestions": [
+                {
+                    "Skill": "flask",
+                    "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
+                },
+                {
+                    "Skill": "fastapi",
+                    "Suggestions": "FastAPI is a modern Python framework known for high performance and automatic API documentation."
+                },
+                {
+                    "Skill": "mysql",
+                    "Suggestions": "MySQL is one of the most commonly used relational database management systems."
+                },
+                {
+                    "Skill": "linux",
+                    "Suggestions": null
+                },
+                {
+                    "Skill": "rest api",
+                    "Suggestions": null
+                },
+                {
+                    "Skill": "unit testing",
+                    "Suggestions": null
+                },
+                {
+                    "Skill": "oop",
+                    "Suggestions": null
+                }
+            ]
+        }
+    }
+}

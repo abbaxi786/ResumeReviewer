@@ -256,8 +256,8 @@ Response
             ],
             "Not_Matched_Skills": [
                 "c",
-                "next",
-                "nuxt"
+                "nextjs",
+                "nuxtjs"
             ]
         }
     }

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 
-from api.util.t1 import CheckRoot, AssignAccordingToExt
+from api.util.t1 import CheckRoot, AssignAccordingToExt, ROLE_KEYWORDS
 
 
 @api_view(["GET", "POST"])
@@ -36,13 +36,23 @@ def FileMessage(request):
                 {"error": "requiredExperience must be an integer."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        requiredSkills =  json.loads(
-                            request.data.get("requiredSkills", "[]")
-                            )
+        role = request.data.get("role")
 
-        if requiredSkills is None:
+        if not role:
             return Response(
-                {"error": "requiredSkills is required."},
+                {"error": "role is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        role = role.strip().lower()
+
+
+        if role not in ROLE_KEYWORDS:
+            return Response(
+                {
+                    "error": "Unsupported role.",
+                    "available_roles": list(ROLE_KEYWORDS.keys())
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -63,7 +73,7 @@ def FileMessage(request):
         file_url = storage.url(filename)
 
         try:
-            text_info = AssignAccordingToExt(file_path,requiredExperience,requiredSkills)
+            text_info = AssignAccordingToExt(file_path,requiredExperience,role)
         except ValueError as e:
             return Response(
                 {"error": str(e)},
