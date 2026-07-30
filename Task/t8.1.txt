@@ -1,26 +1,3 @@
------------------System Design------------------------------------
-
-
-This system consist of one file for api point and util/t1.py is for function providing.
-
-The functions are design in modular format 
-
-Every task is divide into small task and if a function had any repeating task and that task is already in the functions list of file. Then it is designed in cascading format means that function is used in that function again.
-
-Here is the diagram of the function 
-
-AssignAccordingToExt() This function take the file, description, experience, role 
-
-RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,description,fileExt)
-this function further process for the results like these below 
-
- return {"File_extension":fileExt,"Words": numberOfWords, "Characters": NoOfChr,
-            "ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
-
-
-These are the input and output of the api points 
-
-
 POST http://127.0.0.1:8000/api/file/
 
 body 
@@ -34,221 +11,46 @@ Response
     "total_files": 5,
     "results": [
         {
-            "filename": "Resume_3_Python_Django_Developer_E6RtLbj.txt",
-            "url": "/media/Resume_3_Python_Django_Developer_E6RtLbj.txt",
-            "textInfo": {
-                "File_extension": ".txt",
-                "Words": 106,
-                "Characters": 643,
-                "ResumeScores": {
-                    "SkillScore": 7.0,
-                    "ExperienceScore": 40.0,
-                    "KeywordScore": 13.5,
-                    "TotalResumeScore": 60.5,
-                    "Suggestion": null,
-                    "DescriptionScores": {
-                        "MatchedSkills": [
-                            "git",
-                            "aws",
-                            "python",
-                            "django",
-                            "postgresql",
-                            "sql",
-                            "docker"
-                        ],
-                        "MissingSkills": [
-                            "mysql",
-                            "kubernetes",
-                            "github",
-                            "fastapi",
-                            "redis"
-                        ],
-                        "MatchedKeywords": [
-                            "design",
-                            "rest",
-                            "api",
-                            "backend",
-                            "oop",
-                            "linux"
-                        ],
-                        "skills_scores": 58.33,
-                        "keyword_scores": 50.0,
-                        "TFIDF_Cosine_Score": 39.15
-                    }
-                },
-                "SkillsRequiredScores": {
-                    "SkillScoresFromRequired": 50.0,
-                    "Match_Skills": [
-                        "git",
-                        "aws",
-                        "python",
-                        "django",
-                        "postgresql",
-                        "sql",
-                        "docker"
-                    ],
-                    "Not_Matched_Skills": [
-                        "flask",
-                        "fastapi",
-                        "mysql",
-                        "linux",
-                        "rest api",
-                        "unit testing",
-                        "oop"
-                    ],
-                    "MissingSkillWithSuggestions": [
-                        {
-                            "Skill": "flask",
-                            "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
-                        },
-                        {
-                            "Skill": "fastapi",
-                            "Suggestions": "FastAPI is a modern Python framework known for high performance and automatic API documentation."
-                        },
-                        {
-                            "Skill": "mysql",
-                            "Suggestions": "MySQL is one of the most commonly used relational database management systems."
-                        },
-                        {
-                            "Skill": "linux",
-                            "Suggestions": "Linux is widely used for servers, cloud infrastructure, DevOps, and backend development. Learning Linux commands, permissions, networking, and system administration can strengthen your technical profile."
-                        },
-                        {
-                            "Skill": "rest api",
-                            "Suggestions": "REST APIs allow applications to communicate through HTTP using standard methods such as GET, POST, PUT, and DELETE. Learning REST API design is valuable for backend and full-stack development."
-                        },
-                        {
-                            "Skill": "unit testing",
-                            "Suggestions": "Unit testing involves testing individual functions or components to ensure they work correctly. Learning frameworks such as pytest or unittest can improve software reliability and development practices."
-                        },
-                        {
-                            "Skill": "oop",
-                            "Suggestions": "Object-oriented programming organizes software around classes and objects. Understanding concepts such as inheritance, encapsulation, abstraction, and polymorphism is fundamental for professional software development."
-                        }
-                    ]
-                }
-            },
-            "ranking": {
-                "Rank": 1,
-                "Name": "Resume_3_Python_Django_Developer_E6RtLbj.txt",
-                "Score": 60.5,
-                "MatchPercentage": 58.33,
-                "TopMissingSkill": "mysql"
-            }
-        },
-        {
-            "filename": "Resume_1_Python_Developer_9b7xYRJ.docx",
-            "url": "/media/Resume_1_Python_Developer_9b7xYRJ.docx",
-            "textInfo": {
-                "File_extension": ".docx",
-                "Words": 88,
-                "Characters": 493,
-                "ResumeScores": {
-                    "SkillScore": 7.0,
-                    "ExperienceScore": 32.0,
-                    "KeywordScore": 12.0,
-                    "TotalResumeScore": 51.0,
-                    "Suggestion": {
-                        "ExperienceSuggestion": "Required 1 more years of experience."
-                    },
-                    "DescriptionScores": {
-                        "MatchedSkills": [
-                            "git",
-                            "aws",
-                            "python",
-                            "django",
-                            "postgresql",
-                            "sql",
-                            "docker"
-                        ],
-                        "MissingSkills": [
-                            "mysql",
-                            "kubernetes",
-                            "github",
-                            "fastapi",
-                            "redis"
-                        ],
-                        "MatchedKeywords": [
-                            "agile",
-                            "rest",
-                            "api",
-                            "team",
-                            "backend",
-                            "oop",
-                            "development"
-                        ],
-                        "skills_scores": 58.33,
-                        "keyword_scores": 58.33,
-                        "TFIDF_Cosine_Score": 35.84
-                    }
-                },
-                "SkillsRequiredScores": {
-                    "SkillScoresFromRequired": 50.0,
-                    "Match_Skills": [
-                        "git",
-                        "aws",
-                        "python",
-                        "django",
-                        "postgresql",
-                        "sql",
-                        "docker"
-                    ],
-                    "Not_Matched_Skills": [
-                        "flask",
-                        "fastapi",
-                        "mysql",
-                        "linux",
-                        "rest api",
-                        "unit testing",
-                        "oop"
-                    ],
-                    "MissingSkillWithSuggestions": [
-                        {
-                            "Skill": "flask",
-                            "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
-                        },
-                        {
-                            "Skill": "fastapi",
-                            "Suggestions": "FastAPI is a modern Python framework known for high performance and automatic API documentation."
-                        },
-                        {
-                            "Skill": "mysql",
-                            "Suggestions": "MySQL is one of the most commonly used relational database management systems."
-                        },
-                        {
-                            "Skill": "linux",
-                            "Suggestions": "Linux is widely used for servers, cloud infrastructure, DevOps, and backend development. Learning Linux commands, permissions, networking, and system administration can strengthen your technical profile."
-                        },
-                        {
-                            "Skill": "rest api",
-                            "Suggestions": "REST APIs allow applications to communicate through HTTP using standard methods such as GET, POST, PUT, and DELETE. Learning REST API design is valuable for backend and full-stack development."
-                        },
-                        {
-                            "Skill": "unit testing",
-                            "Suggestions": "Unit testing involves testing individual functions or components to ensure they work correctly. Learning frameworks such as pytest or unittest can improve software reliability and development practices."
-                        },
-                        {
-                            "Skill": "oop",
-                            "Suggestions": "Object-oriented programming organizes software around classes and objects. Understanding concepts such as inheritance, encapsulation, abstraction, and polymorphism is fundamental for professional software development."
-                        }
-                    ]
-                }
-            },
-            "ranking": {
-                "Rank": 2,
-                "Name": "Resume_1_Python_Developer_9b7xYRJ.docx",
-                "Score": 51.0,
-                "MatchPercentage": 58.33,
-                "TopMissingSkill": "mysql"
-            }
-        },
-        {
-            "filename": "FirstText_6HRq6Gu.docx",
-            "url": "/media/FirstText_6HRq6Gu.docx",
+            "filename": "FirstText_GWbQk95.docx",
+            "url": "/media/FirstText_GWbQk95.docx",
             "textInfo": {
                 "File_extension": ".docx",
                 "Words": 60,
                 "Characters": 348,
+                "PersonData": [
+                    {
+                        "label": "PERSON",
+                        "text": "John Smith"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Phone"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "4 years"
+                    },
+                    {
+                        "label": "NORP",
+                        "text": "Agile"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "PostgreSQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "ABC Technologies"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "2020"
+                    }
+                ],
                 "ResumeScores": {
                     "SkillScore": 8.0,
                     "ExperienceScore": 32.0,
@@ -259,28 +61,28 @@ Response
                     },
                     "DescriptionScores": {
                         "MatchedSkills": [
-                            "git",
                             "aws",
-                            "python",
                             "django",
-                            "postgresql",
                             "sql",
-                            "docker"
+                            "git",
+                            "docker",
+                            "postgresql",
+                            "python"
                         ],
                         "MissingSkills": [
-                            "mysql",
                             "kubernetes",
                             "github",
+                            "redis",
                             "fastapi",
-                            "redis"
+                            "mysql"
                         ],
                         "MatchedKeywords": [
-                            "design",
                             "agile",
-                            "rest",
                             "api",
-                            "team",
-                            "backend"
+                            "rest",
+                            "design",
+                            "backend",
+                            "team"
                         ],
                         "skills_scores": 58.33,
                         "keyword_scores": 50.0,
@@ -290,13 +92,13 @@ Response
                 "SkillsRequiredScores": {
                     "SkillScoresFromRequired": 50.0,
                     "Match_Skills": [
-                        "git",
                         "aws",
-                        "python",
                         "django",
-                        "postgresql",
                         "sql",
-                        "docker"
+                        "git",
+                        "docker",
+                        "postgresql",
+                        "python"
                     ],
                     "Not_Matched_Skills": [
                         "flask",
@@ -307,7 +109,7 @@ Response
                         "unit testing",
                         "oop"
                     ],
-                    "MissingSkillWithSuggestions": [
+                    "MistSkillWithSuggestions": [
                         {
                             "Skill": "flask",
                             "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
@@ -338,22 +140,254 @@ Response
                         }
                     ]
                 }
-            },
-            "ranking": {
-                "Rank": 3,
-                "Name": "FirstText_6HRq6Gu.docx",
-                "Score": 50.5,
-                "MatchPercentage": 58.33,
-                "TopMissingSkill": "mysql"
             }
         },
         {
-            "filename": "Resume_2_Python_Flask_Developer_ystFj3F.docx",
-            "url": "/media/Resume_2_Python_Flask_Developer_ystFj3F.docx",
+            "filename": "Resume_1_Python_Developer_Xhm3QO3.docx",
+            "url": "/media/Resume_1_Python_Developer_Xhm3QO3.docx",
+            "textInfo": {
+                "File_extension": ".docx",
+                "Words": 88,
+                "Characters": 493,
+                "PersonData": [
+                    {
+                        "label": "PERSON",
+                        "text": "John Smith"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "1001"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "4 years"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "ABC Technologies"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "2020 - 2024 - Developed"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Python"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Docker"
+                    },
+                    {
+                        "label": "NORP",
+                        "text": "Agile"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "Technical Skills Python"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "PostgreSQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "Git, Docker"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "AWS"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "API"
+                    }
+                ],
+                "ResumeScores": {
+                    "SkillScore": 7.0,
+                    "ExperienceScore": 32.0,
+                    "KeywordScore": 12.0,
+                    "TotalResumeScore": 51.0,
+                    "Suggestion": {
+                        "ExperienceSuggestion": "Required 1 more years of experience."
+                    },
+                    "DescriptionScores": {
+                        "MatchedSkills": [
+                            "aws",
+                            "django",
+                            "git",
+                            "docker",
+                            "postgresql",
+                            "python",
+                            "sql"
+                        ],
+                        "MissingSkills": [
+                            "kubernetes",
+                            "github",
+                            "redis",
+                            "fastapi",
+                            "mysql"
+                        ],
+                        "MatchedKeywords": [
+                            "agile",
+                            "api",
+                            "rest",
+                            "backend",
+                            "team",
+                            "development",
+                            "oop"
+                        ],
+                        "skills_scores": 58.33,
+                        "keyword_scores": 58.33,
+                        "TFIDF_Cosine_Score": 35.84
+                    }
+                },
+                "SkillsRequiredScores": {
+                    "SkillScoresFromRequired": 50.0,
+                    "Match_Skills": [
+                        "aws",
+                        "django",
+                        "git",
+                        "docker",
+                        "postgresql",
+                        "python",
+                        "sql"
+                    ],
+                    "Not_Matched_Skills": [
+                        "flask",
+                        "fastapi",
+                        "mysql",
+                        "linux",
+                        "rest api",
+                        "unit testing",
+                        "oop"
+                    ],
+                    "MistSkillWithSuggestions": [
+                        {
+                            "Skill": "flask",
+                            "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
+                        },
+                        {
+                            "Skill": "fastapi",
+                            "Suggestions": "FastAPI is a modern Python framework known for high performance and automatic API documentation."
+                        },
+                        {
+                            "Skill": "mysql",
+                            "Suggestions": "MySQL is one of the most commonly used relational database management systems."
+                        },
+                        {
+                            "Skill": "linux",
+                            "Suggestions": "Linux is widely used for servers, cloud infrastructure, DevOps, and backend development. Learning Linux commands, permissions, networking, and system administration can strengthen your technical profile."
+                        },
+                        {
+                            "Skill": "rest api",
+                            "Suggestions": "REST APIs allow applications to communicate through HTTP using standard methods such as GET, POST, PUT, and DELETE. Learning REST API design is valuable for backend and full-stack development."
+                        },
+                        {
+                            "Skill": "unit testing",
+                            "Suggestions": "Unit testing involves testing individual functions or components to ensure they work correctly. Learning frameworks such as pytest or unittest can improve software reliability and development practices."
+                        },
+                        {
+                            "Skill": "oop",
+                            "Suggestions": "Object-oriented programming organizes software around classes and objects. Understanding concepts such as inheritance, encapsulation, abstraction, and polymorphism is fundamental for professional software development."
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "filename": "Resume_2_Python_Flask_Developer.docx",
+            "url": "/media/Resume_2_Python_Flask_Developer.docx",
             "textInfo": {
                 "File_extension": ".docx",
                 "Words": 102,
                 "Characters": 581,
+                "PersonData": [
+                    {
+                        "label": "ORG",
+                        "text": "Resume 2 Python Flask Developer Python Flask Developer Email"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Phone"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "300 0000000"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "2 years"
+                    },
+                    {
+                        "label": "FAC",
+                        "text": "Flask"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "Flask"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "• Created"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "TECHNICAL SKILLS Python"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "Flask"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Git"
+                    },
+                    {
+                        "label": "PRODUCT",
+                        "text": "GitHub"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "Linux"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "HTML"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "CSS"
+                    }
+                ],
                 "ResumeScores": {
                     "SkillScore": 8.0,
                     "ExperienceScore": 16.0,
@@ -364,27 +398,27 @@ Response
                     },
                     "DescriptionScores": {
                         "MatchedSkills": [
-                            "mysql",
-                            "git",
-                            "github",
                             "sql",
-                            "python"
+                            "github",
+                            "git",
+                            "python",
+                            "mysql"
                         ],
                         "MissingSkills": [
                             "aws",
-                            "docker",
-                            "kubernetes",
                             "django",
+                            "kubernetes",
+                            "redis",
+                            "docker",
                             "fastapi",
-                            "postgresql",
-                            "redis"
+                            "postgresql"
                         ],
                         "MatchedKeywords": [
-                            "rest",
-                            "api",
                             "web",
-                            "backend",
-                            "linux"
+                            "api",
+                            "linux",
+                            "rest",
+                            "backend"
                         ],
                         "skills_scores": 41.67,
                         "keyword_scores": 41.67,
@@ -394,11 +428,11 @@ Response
                 "SkillsRequiredScores": {
                     "SkillScoresFromRequired": 35.714285714285715,
                     "Match_Skills": [
-                        "mysql",
-                        "git",
-                        "flask",
                         "sql",
-                        "python"
+                        "flask",
+                        "git",
+                        "python",
+                        "mysql"
                     ],
                     "Not_Matched_Skills": [
                         "django",
@@ -411,7 +445,7 @@ Response
                         "unit testing",
                         "oop"
                     ],
-                    "MissingSkillWithSuggestions": [
+                    "MistSkillWithSuggestions": [
                         {
                             "Skill": "django",
                             "Suggestions": "Django is a powerful Python framework used for secure and scalable web applications."
@@ -450,22 +484,279 @@ Response
                         }
                     ]
                 }
-            },
-            "ranking": {
-                "Rank": 4,
-                "Name": "Resume_2_Python_Flask_Developer_ystFj3F.docx",
-                "Score": 37.5,
-                "MatchPercentage": 41.67,
-                "TopMissingSkill": "aws"
             }
         },
         {
-            "filename": "Resume_5_Python_Junior_Developer_7elDT3s.pdf",
-            "url": "/media/Resume_5_Python_Junior_Developer_7elDT3s.pdf",
+            "filename": "Resume_3_Python_Django_Developer.txt",
+            "url": "/media/Resume_3_Python_Django_Developer.txt",
+            "textInfo": {
+                "File_extension": ".txt",
+                "Words": 106,
+                "Characters": 643,
+                "PersonData": [
+                    {
+                        "label": "ORG",
+                        "text": "Resume 3 Python Django Developer Django Backend"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Phone"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "300 0000000"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "5 years"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "• Built"
+                    },
+                    {
+                        "label": "WORK_OF_ART",
+                        "text": "Python and Django"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "• Created"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Docker"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "AWS"
+                    },
+                    {
+                        "label": "PRODUCT",
+                        "text": "Linux"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "TECHNICAL SKILLS Python"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "GPE",
+                        "text": "PostgreSQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "Git, Docker"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "AWS"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Unit Testing"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "OOP"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "Linux EDUCATION BS Computer Science"
+                    }
+                ],
+                "ResumeScores": {
+                    "SkillScore": 7.0,
+                    "ExperienceScore": 40.0,
+                    "KeywordScore": 13.5,
+                    "TotalResumeScore": 60.5,
+                    "Suggestion": null,
+                    "DescriptionScores": {
+                        "MatchedSkills": [
+                            "aws",
+                            "django",
+                            "git",
+                            "docker",
+                            "postgresql",
+                            "python",
+                            "sql"
+                        ],
+                        "MissingSkills": [
+                            "kubernetes",
+                            "github",
+                            "redis",
+                            "fastapi",
+                            "mysql"
+                        ],
+                        "MatchedKeywords": [
+                            "api",
+                            "linux",
+                            "rest",
+                            "design",
+                            "backend",
+                            "oop"
+                        ],
+                        "skills_scores": 58.33,
+                        "keyword_scores": 50.0,
+                        "TFIDF_Cosine_Score": 39.15
+                    }
+                },
+                "SkillsRequiredScores": {
+                    "SkillScoresFromRequired": 50.0,
+                    "Match_Skills": [
+                        "aws",
+                        "django",
+                        "git",
+                        "docker",
+                        "postgresql",
+                        "python",
+                        "sql"
+                    ],
+                    "Not_Matched_Skills": [
+                        "flask",
+                        "fastapi",
+                        "mysql",
+                        "linux",
+                        "rest api",
+                        "unit testing",
+                        "oop"
+                    ],
+                    "MistSkillWithSuggestions": [
+                        {
+                            "Skill": "flask",
+                            "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
+                        },
+                        {
+                            "Skill": "fastapi",
+                            "Suggestions": "FastAPI is a modern Python framework known for high performance and automatic API documentation."
+                        },
+                        {
+                            "Skill": "mysql",
+                            "Suggestions": "MySQL is one of the most commonly used relational database management systems."
+                        },
+                        {
+                            "Skill": "linux",
+                            "Suggestions": "Linux is widely used for servers, cloud infrastructure, DevOps, and backend development. Learning Linux commands, permissions, networking, and system administration can strengthen your technical profile."
+                        },
+                        {
+                            "Skill": "rest api",
+                            "Suggestions": "REST APIs allow applications to communicate through HTTP using standard methods such as GET, POST, PUT, and DELETE. Learning REST API design is valuable for backend and full-stack development."
+                        },
+                        {
+                            "Skill": "unit testing",
+                            "Suggestions": "Unit testing involves testing individual functions or components to ensure they work correctly. Learning frameworks such as pytest or unittest can improve software reliability and development practices."
+                        },
+                        {
+                            "Skill": "oop",
+                            "Suggestions": "Object-oriented programming organizes software around classes and objects. Understanding concepts such as inheritance, encapsulation, abstraction, and polymorphism is fundamental for professional software development."
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "filename": "Resume_5_Python_Junior_Developer.pdf",
+            "url": "/media/Resume_5_Python_Junior_Developer.pdf",
             "textInfo": {
                 "File_extension": ".pdf",
                 "Words": 95,
                 "Characters": 596,
+                "PersonData": [
+                    {
+                        "label": "ORG",
+                        "text": "Resume 5 Python Junior Developer Junior Python Developer"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Phone"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "300 0000000"
+                    },
+                    {
+                        "label": "DATE",
+                        "text": "1 year"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Python"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQLite"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Created HTML"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "CSS"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "JavaScript"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Git"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "TECHNICAL SKILLS Python"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Django"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQLite"
+                    },
+                    {
+                        "label": "PERSON",
+                        "text": "Git"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "CSS"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "JavaScript"
+                    },
+                    {
+                        "label": "ORG",
+                        "text": "SQL EDUCATION BS Computer Science"
+                    }
+                ],
                 "ResumeScores": {
                     "SkillScore": 8.0,
                     "ExperienceScore": 8.0,
@@ -476,20 +767,20 @@ Response
                     },
                     "DescriptionScores": {
                         "MatchedSkills": [
-                            "git",
                             "django",
-                            "sql",
-                            "python"
+                            "git",
+                            "python",
+                            "sql"
                         ],
                         "MissingSkills": [
-                            "mysql",
                             "aws",
-                            "docker",
                             "kubernetes",
                             "github",
+                            "redis",
+                            "docker",
                             "fastapi",
                             "postgresql",
-                            "redis"
+                            "mysql"
                         ],
                         "MatchedKeywords": [
                             "web"
@@ -502,10 +793,10 @@ Response
                 "SkillsRequiredScores": {
                     "SkillScoresFromRequired": 28.57142857142857,
                     "Match_Skills": [
-                        "git",
                         "django",
-                        "sql",
-                        "python"
+                        "git",
+                        "python",
+                        "sql"
                     ],
                     "Not_Matched_Skills": [
                         "flask",
@@ -519,7 +810,7 @@ Response
                         "unit testing",
                         "oop"
                     ],
-                    "MissingSkillWithSuggestions": [
+                    "MistSkillWithSuggestions": [
                         {
                             "Skill": "flask",
                             "Suggestions": "Flask is a lightweight Python framework suitable for REST APIs and microservices."
@@ -562,13 +853,6 @@ Response
                         }
                     ]
                 }
-            },
-            "ranking": {
-                "Rank": 5,
-                "Name": "Resume_5_Python_Junior_Developer_7elDT3s.pdf",
-                "Score": 19.0,
-                "MatchPercentage": 33.33,
-                "TopMissingSkill": "mysql"
             }
         }
     ]

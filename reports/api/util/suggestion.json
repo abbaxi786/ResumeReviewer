@@ -5,6 +5,7 @@
     "c": "Knowledge of C strengthens your understanding of programming fundamentals and system-level development.",
     "cpp": "C++ is valuable for performance-critical applications, game development, and competitive programming.",
     "csharp": "C# is commonly used with the .NET framework for desktop, web, and enterprise applications.",
+
     "javascript": "JavaScript is essential for modern web development. Most frontend frameworks rely on it.",
     "typescript": "TypeScript improves JavaScript by adding static typing and is commonly used in large-scale web applications.",
     "html": "HTML is the foundation of web pages and is required for frontend development.",
@@ -13,22 +14,39 @@
     "tailwind": "Tailwind CSS is widely used for rapidly building modern and responsive user interfaces.",
     "react": "React is one of the most popular frontend libraries for building interactive user interfaces.",
     "nextjs": "Next.js extends React with server-side rendering, routing, and performance optimizations.",
+    "redux": "Redux is a state management library commonly used with React applications to manage complex application state.",
+    "responsive design": "Responsive design allows websites to adapt to different screen sizes and devices. It is an important skill for frontend developers.",
+
     "nodejs": "Node.js enables JavaScript development on the server side and is widely used for backend APIs.",
-    "express": "Express.js is the most popular backend framework for Node.js applications.",
+    "node": "Node.js enables JavaScript development on the server side and is widely used for building backend applications and APIs.",
+    "express": "Express.js is a popular backend framework for Node.js applications.",
+
     "django": "Django is a powerful Python framework used for secure and scalable web applications.",
     "flask": "Flask is a lightweight Python framework suitable for REST APIs and microservices.",
     "fastapi": "FastAPI is a modern Python framework known for high performance and automatic API documentation.",
+
     "sql": "SQL is essential for querying and managing relational databases.",
     "mysql": "MySQL is one of the most commonly used relational database management systems.",
     "postgresql": "PostgreSQL offers advanced database features and is highly valued in enterprise applications.",
     "sqlite": "SQLite is useful for lightweight applications and rapid prototyping.",
     "mongodb": "MongoDB is a popular NoSQL database for handling flexible and scalable data.",
-    "redis": "Redis is widely used for caching, session management, and improving application performance.",
+    "redis": "Redis is widely used for caching, session management, session storage, and improving application performance.",
+
     "git": "Git is the industry-standard version control system used in software development.",
-    "github": "GitHub is the leading platform for collaboration, version control, and showcasing projects.",
+    "github": "GitHub is a leading platform for collaboration, version control, code sharing, and showcasing software projects.",
+
     "docker": "Docker enables applications to run consistently across different environments using containers.",
-    "kubernetes": "Kubernetes is the industry standard for deploying, managing, and scaling containerized applications.",
-    "aws": "AWS is the leading cloud platform and is highly valued for cloud deployment and infrastructure.",
-    "azure": "Microsoft Azure is a major cloud platform widely used by enterprise organizations."
+    "kubernetes": "Kubernetes is widely used for deploying, managing, and scaling containerized applications.",
+
+    "aws": "AWS is a leading cloud platform and is highly valued for cloud deployment, infrastructure, storage, and application hosting.",
+    "azure": "Microsoft Azure is a major cloud platform widely used by enterprise organizations.",
+
+    "linux": "Linux is widely used for servers, cloud infrastructure, DevOps, and backend development. Learning Linux commands, permissions, networking, and system administration can strengthen your technical profile.",
+
+    "rest api": "REST APIs allow applications to communicate through HTTP using standard methods such as GET, POST, PUT, and DELETE. Learning REST API design is valuable for backend and full-stack development.",
+
+    "unit testing": "Unit testing involves testing individual functions or components to ensure they work correctly. Learning frameworks such as pytest or unittest can improve software reliability and development practices.",
+
+    "oop": "Object-oriented programming organizes software around classes and objects. Understanding concepts such as inheritance, encapsulation, abstraction, and polymorphism is fundamental for professional software development."
   }
 }

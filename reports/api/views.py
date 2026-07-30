@@ -118,6 +118,38 @@ def FileMessage(request):
                 "error": str(e)
             })
 
+        results.sort(
+        key=lambda x: x.get("textInfo", {})
+                        .get("ResumeScores", {})
+                        .get("TotalResumeScore", 0),
+        reverse=True
+    )
+
+    rank = 1
+
+    for result in results:
+
+        text_info = result.get("textInfo")
+
+        if not text_info:
+            continue
+
+        resume_scores = text_info.get("ResumeScores", {})
+        description_scores = resume_scores.get("DescriptionScores", {})
+
+        result["ranking"] = {
+            "Rank": rank,
+            "Name": result.get("filename"),
+            "Score": resume_scores.get("TotalResumeScore", 0),
+            "MatchPercentage": description_scores.get("skills_scores", 0),
+            "TopMissingSkill": (
+                description_scores.get("MissingSkills", [None])[0]
+                if description_scores.get("MissingSkills")
+                else None
+            )
+        }
+
+        rank += 1
     return Response(
         {
             "message": "Files processed successfully.",

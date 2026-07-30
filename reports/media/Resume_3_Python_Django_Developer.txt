@@ -1,0 +1,22 @@
+Resume 3 Python Django Developer
+Django Backend Developer
+Email: candidate@example.com
+Phone: +92 300 0000000
+
+PROFESSIONAL SUMMARY
+Backend Developer with 5 years of experience developing scalable Django applications and REST APIs.
+
+WORK EXPERIENCE
+Software Company — Django Backend Developer | 5 years
+• Built backend systems using Python and Django.
+• Designed PostgreSQL database schemas and optimized SQL queries.
+• Created REST APIs and authentication systems.
+• Containerized applications using Docker.
+• Deployed applications to AWS and maintained Linux servers.
+• Wrote unit tests and followed OOP principles.
+
+TECHNICAL SKILLS
+Python, Django, PostgreSQL, SQL, Git, Docker, AWS, REST API, Unit Testing, OOP, Linux
+
+EDUCATION
+BS Computer Science

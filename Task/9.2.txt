@@ -1,0 +1,28 @@
+
+
+<-----------------Against the No file upload-------------------------------->
+
+POST http://127.0.0.1:8000/api/file/
+
+body 
+
+fields : files, requiredExperience,role, description
+
+
+Response 
+
+{
+    "error": "No files uploaded."
+}
+
+<-------------------------Against the unsupported file type---------------------->
+
+POST http://127.0.0.1:8000/api/file/
+
+body 
+
+fields : files, requiredExperience,role, description, Array of file "files"
+
+Response
+
+{"message":"Files processed successfully.","total_files":1,"results":[{"filename":"poster 11.pptx","error":"Unsupported file type."}]}

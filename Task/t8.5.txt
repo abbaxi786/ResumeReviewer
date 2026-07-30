@@ -1,26 +1,3 @@
------------------System Design------------------------------------
-
-
-This system consist of one file for api point and util/t1.py is for function providing.
-
-The functions are design in modular format 
-
-Every task is divide into small task and if a function had any repeating task and that task is already in the functions list of file. Then it is designed in cascading format means that function is used in that function again.
-
-Here is the diagram of the function 
-
-AssignAccordingToExt() This function take the file, description, experience, role 
-
-RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,description,fileExt)
-this function further process for the results like these below 
-
- return {"File_extension":fileExt,"Words": numberOfWords, "Characters": NoOfChr,
-            "ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
-
-
-These are the input and output of the api points 
-
-
 POST http://127.0.0.1:8000/api/file/
 
 body 

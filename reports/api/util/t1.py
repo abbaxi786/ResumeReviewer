@@ -194,7 +194,7 @@ def FromRTF(fileExt):
     
 # this function uses the text and make it in order form to give json 
 
-def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,description):
+def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,description,fileExt):
 
     cleaned_text = re.sub(r'\s+', ' ', txt).strip()
     words = re.findall(r'\S+', cleaned_text)
@@ -216,8 +216,10 @@ def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,descr
         requiredSkills
     )    
 
-    return {"Text": cleaned_text, "Words": numberOfWords, "Characters": NoOfChr,"LematizedWords":lematizedWords,
-            "PersonSkills":GivenSkills,"PersonData":entityData,"ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
+    # return {"File_extension":fileExt,"Words": numberOfWords, "Characters": NoOfChr,
+    #         "ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores,"PersonData":entityData}
+    return {"File_extension":fileExt,"Words": numberOfWords, "Characters": NoOfChr,
+            "ResumeScores":ResumeScoresOverall,"SkillsRequiredScores": skillScores}
 
 # this function uses the file and return output according to it extension 
 
@@ -226,13 +228,13 @@ def AssignAccordingToExt(file,requiredExperience,role,description):
     ext = GetExt(file)
 
     if ext == '.docx':
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,role,description)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,role,description,ext)
     elif ext == ".pdf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,role,description)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,role,description,ext)
     elif ext == ".txt":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,role,description)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,role,description,ext)
     elif ext == ".rtf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,role,description)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,role,description,ext)
     else:
         raise ValueError("Unsupported file type.")
     
@@ -360,7 +362,7 @@ def ScoringSkillMetrics(foundSkills,RequiredSkills):
      NotmatchedSkills = [skill for skill in RequiredSkills if skill not in foundSkills]
      scores = min(len(matchedSkills)/len(RequiredSkills),1)*100 if RequiredSkills else 0
      MistSkillWithSuggestions = LoadingSuggestionAndCheckingMissingTeckSkills(NotmatchedSkills)
-     return {"SkillScoresFromRequired": scores,"Match_Skills":matchedSkills,"Not_Matched_Skills":NotmatchedSkills,"MistSkillWithSuggestions":MistSkillWithSuggestions}
+     return {"SkillScoresFromRequired": scores,"Match_Skills":matchedSkills,"Not_Matched_Skills":NotmatchedSkills,"MissingSkillWithSuggestions":MistSkillWithSuggestions}
 
 
 
