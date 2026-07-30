@@ -2,9 +2,12 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import json
 
-from api.util.t1 import CheckRoot, AssignAccordingToExt, ROLE_KEYWORDS
+from api.util.t1 import (
+    CheckRoot,
+    AssignAccordingToExt,
+    ROLE_KEYWORDS
+)
 
 
 @api_view(["GET", "POST"])
@@ -12,85 +15,114 @@ def FileMessage(request):
 
     if request.method == "GET":
         return Response("Welcome to my app")
-    
-    if request.method== "POST":
 
-        if "file" not in request.FILES:
-            return Response(
-                {"error": "No file uploaded."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        
-        requiredExperience = request.data.get("requiredExperience")
+    # Get multiple files
+    uploaded_files = request.FILES.getlist("files")
 
-        if requiredExperience is None:
-            return Response(
-                {"error": "requiredExperience is required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    if not uploaded_files:
+        return Response(
+            {"error": "No files uploaded."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        try:
-            requiredExperience = int(requiredExperience)
-        except ValueError:
-            return Response(
-                {"error": "requiredExperience must be an integer."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        role = request.data.get("role")
+    # Job description
+    description = request.data.get("description", "")
 
-        if not role:
-            return Response(
-                {"error": "role is required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    # Required experience
+    requiredExperience = request.data.get("requiredExperience")
 
-        role = role.strip().lower()
+    if requiredExperience is None:
+        return Response(
+            {"error": "requiredExperience is required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
+    try:
+        requiredExperience = int(requiredExperience)
+    except (ValueError, TypeError):
+        return Response(
+            {"error": "requiredExperience must be an integer."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        if role not in ROLE_KEYWORDS:
-            return Response(
-                {
-                    "error": "Unsupported role.",
-                    "available_roles": list(ROLE_KEYWORDS.keys())
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    # Role
+    role = request.data.get("role")
 
+    if not role:
+        return Response(
+            {"error": "role is required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        uploaded_file = request.FILES["file"]
+    role = role.strip().lower()
 
-        if not CheckRoot(uploaded_file.name):
-            return Response(
-                {"error": "Unsupported file type."},
-                status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            )
-
-        storage = FileSystemStorage()
-
-        filename = storage.save(uploaded_file.name, uploaded_file)
-
-        file_path = storage.path(filename)
-        file_url = storage.url(filename)
-
-        try:
-            text_info = AssignAccordingToExt(file_path,requiredExperience,role)
-        except ValueError as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
+    if role not in ROLE_KEYWORDS:
         return Response(
             {
-                "message": "File uploaded successfully.",
+                "error": "Unsupported role.",
+                "available_roles": list(ROLE_KEYWORDS.keys())
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    storage = FileSystemStorage()
+
+    results = []
+
+    # Process every resume
+    for uploaded_file in uploaded_files:
+
+        if not CheckRoot(uploaded_file.name):
+            results.append({
+                "filename": uploaded_file.name,
+                "error": "Unsupported file type."
+            })
+            continue
+
+        try:
+            # Save file
+            filename = storage.save(
+                uploaded_file.name,
+                uploaded_file
+            )
+
+            # Get path and URL
+            file_path = storage.path(filename)
+            file_url = storage.url(filename)
+
+            # Analyze resume
+            text_info = AssignAccordingToExt(
+                file_path,
+                requiredExperience,
+                role,
+                description
+            )
+
+            results.append({
                 "filename": filename,
                 "url": file_url,
-                "textInfo": text_info,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+                "textInfo": text_info
+            })
+
+        except ValueError as e:
+
+            results.append({
+                "filename": uploaded_file.name,
+                "error": str(e)
+            })
+
+        except Exception as e:
+
+            results.append({
+                "filename": uploaded_file.name,
+                "error": str(e)
+            })
+
+    return Response(
+        {
+            "message": "Files processed successfully.",
+            "total_files": len(uploaded_files),
+            "results": results
+        },
+        status=status.HTTP_201_CREATED,
+    )

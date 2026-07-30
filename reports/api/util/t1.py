@@ -7,6 +7,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import spacy
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -192,7 +194,7 @@ def FromRTF(fileExt):
     
 # this function uses the text and make it in order form to give json 
 
-def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role):
+def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role,description):
 
     cleaned_text = re.sub(r'\s+', ' ', txt).strip()
     words = re.findall(r'\S+', cleaned_text)
@@ -204,7 +206,7 @@ def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role):
     keywordMatch = CheckKeywords(lematizedWords)
     entityData = ExtractEntity(cleaned_text)
     experience = ExtractExperience(cleaned_text)
-    ResumeScoresOverall = ScoringMatrics(len(GivenSkills),len(tech_skills),experience,requiredExperience,len(KEYWORDS),len(keywordMatch))
+    ResumeScoresOverall = ScoringMatrics(GivenSkills,tech_skills,experience,requiredExperience,KEYWORDS,keywordMatch,description,cleaned_text)
     requiredSkills = ROLE_KEYWORDS.get(role)
     if requiredSkills is None:
         raise ValueError(f"Unknown role: {role}")
@@ -219,18 +221,18 @@ def RemoveExtraSpaceAndGiveNumberOfWordsAndChr(txt,requiredExperience,role):
 
 # this function uses the file and return output according to it extension 
 
-def AssignAccordingToExt(file,requiredExperience,role):
+def AssignAccordingToExt(file,requiredExperience,role,description):
      
     ext = GetExt(file)
 
     if ext == '.docx':
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,role)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromDoc(file),requiredExperience,role,description)
     elif ext == ".pdf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,role)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromPdf(file),requiredExperience,role,description)
     elif ext == ".txt":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,role)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromTxt(file),requiredExperience,role,description)
     elif ext == ".rtf":
-          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,role)
+          return RemoveExtraSpaceAndGiveNumberOfWordsAndChr(FromRTF(file),requiredExperience,role,description)
     else:
         raise ValueError("Unsupported file type.")
     
@@ -302,40 +304,53 @@ def ScoringMatrics(
     requiredExperience,
     totalKeywords,
     foundKeywords,
+    description,
+    resumeText,
 ):
-    Suggestion= None
+    suggestion = None
 
+    # Skills Score (30 Marks)
     skillScore = (
-        min(foundSkills / totalSkills, 1) * 30
+        min(len(foundSkills) / len(totalSkills), 1) * 30
         if totalSkills else 0
     )
 
+    # Experience Score (40 Marks)
     experienceScore = (
         min(candidateExperience / requiredExperience, 1) * 40
         if requiredExperience else 0
     )
 
+    # Keyword Score (30 Marks)
     keywordScore = (
-        min(foundKeywords / totalKeywords, 1) * 30
+        min(len(foundKeywords) / len(totalKeywords), 1) * 30
         if totalKeywords else 0
     )
 
     total = skillScore + experienceScore + keywordScore
 
-    if requiredExperience-candidateExperience >= 1:
-         Suggestion = {
-              "ExperienceSuggestion": f"Required {requiredExperience-candidateExperience} years"
-         }
+    # Suggest experience if required
+    if candidateExperience < requiredExperience:
+        suggestion = {
+            "ExperienceSuggestion": f"Required {requiredExperience - candidateExperience} more years of experience."
+        }
 
-
+    descriptionScores = DescriptionSetting(
+        description,
+        foundSkills,
+        foundKeywords,
+        resumeText,
+    )
 
     return {
         "SkillScore": round(skillScore, 2),
         "ExperienceScore": round(experienceScore, 2),
         "KeywordScore": round(keywordScore, 2),
         "TotalResumeScore": round(total, 2),
-        "Suggestion":     Suggestion
+        "Suggestion": suggestion,
+        "DescriptionScores": descriptionScores
     }
+
 
 def ScoringSkillMetrics(foundSkills,RequiredSkills):
 
@@ -377,6 +392,92 @@ def LoadingSuggestionAndCheckingMissingTeckSkills(techSkills):
     
     return skillList
 
+
+#   the description process functions 
+
+def DescriptionSetting(txt, foundSkills, foundKeywords,resumeText):
+
+    if txt is None or txt.strip() == "":
+        return {
+            "message": "Job description not provided."
+        }
+
+    lemmatizedWords = WordLemmatizer(txt)
+
+    skillsFromDescription = CheckSkills(lemmatizedWords)
+    keywordsFromDescription = CheckKeywords(lemmatizedWords)
+
+    matchedSkillsWithDescription = [
+        skill for skill in foundSkills
+        if skill in skillsFromDescription
+    ]
+
+    matchedKeywordsWithDescription = [
+        keyword for keyword in foundKeywords
+        if keyword in keywordsFromDescription
+    ]
+
+    descriptionSkillScore = (
+        len(matchedSkillsWithDescription) /
+        len(skillsFromDescription) * 100
+        if skillsFromDescription else 0
+    )
+
+    descriptionKeywordScore = (
+        len(matchedKeywordsWithDescription) /
+        len(keywordsFromDescription) * 100
+        if keywordsFromDescription else 0
+    )
+
+    tfidfScore = TFIDFCosineSimilarity(
+        resumeText,
+        txt
+    )
+
+    return {
+        "MatchedSkills": matchedSkillsWithDescription,
+        "MissingSkills": [
+            skill
+            for skill in skillsFromDescription
+            if skill not in foundSkills
+        ],
+        "MatchedKeywords": matchedKeywordsWithDescription,
+        "skills_scores": round(descriptionSkillScore, 2),
+        "keyword_scores": round(descriptionKeywordScore, 2),
+        "TFIDF_Cosine_Score": tfidfScore
+    }
+
+# ---------------cosine similarity of description and resume--------------------------
+
+def TFIDFCosineSimilarity(resumeText, jobDescription):
+
+    if not resumeText or not jobDescription:
+        return 0
+
+    documents = [
+        resumeText,
+        jobDescription
+    ]
+
+    vectorizer = TfidfVectorizer(
+        stop_words="english"
+    )
+
+    tfidf_matrix = vectorizer.fit_transform(documents)
+
+    similarity = cosine_similarity(
+        tfidf_matrix[0:1],
+        tfidf_matrix[1:2]
+    )
+
+    score = float(similarity[0][0]) * 100
+
+    return round(score, 2)
+
+
+
+
+    
 
 
         
