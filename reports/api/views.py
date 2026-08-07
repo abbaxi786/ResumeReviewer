@@ -1,7 +1,9 @@
 from django.core.files.storage import FileSystemStorage
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+
 
 from api.util.t1 import (
     CheckRoot,
@@ -11,6 +13,7 @@ from api.util.t1 import (
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
 def FileMessage(request):
 
     if request.method == "GET":
