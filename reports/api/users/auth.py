@@ -34,7 +34,10 @@ def login(request):
 
     return Response({
         "access": str(refresh.access_token),
-        "refresh": str(refresh)
+        "refresh": str(refresh),
+        "id": user.id,
+        "username": user.username,
+        "email": user.email
     })
 
 @api_view(["POST"])
