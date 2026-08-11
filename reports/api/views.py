@@ -227,11 +227,6 @@ def FileMessage(request):
 
         rank += 1
 
-
-    # ==========================================
-    # Response
-    # ==========================================
-
     return Response(
         {
             "message": "Files processed successfully.",
