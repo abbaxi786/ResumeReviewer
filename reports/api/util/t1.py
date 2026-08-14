@@ -7,8 +7,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import spacy
 import json
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.metrics.pairwise import cosine_similarity
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -586,22 +586,108 @@ def TFIDFCosineSimilarity(resumeText, jobDescription):
         jobDescription
     ]
 
-    vectorizer = TfidfVectorizer(
-        stop_words="english"
+    # Tokenize similar to sklearn's default token pattern:
+    # words containing at least 2 characters
+    tokenized_documents = []
+
+    for document in documents:
+        tokens = re.findall(
+            r"(?u)\b\w\w+\b",
+            document.lower()
+        )
+
+        # Remove English stop words
+        tokens = [
+            token
+            for token in tokens
+            if token not in stop_words
+        ]
+
+        tokenized_documents.append(tokens)
+
+    # Create vocabulary
+    vocabulary = set()
+
+    for tokens in tokenized_documents:
+        vocabulary.update(tokens)
+
+    if not vocabulary:
+        return 0
+
+    vocabulary = sorted(vocabulary)
+
+    # Calculate document frequency
+    document_frequency = {}
+
+    for term in vocabulary:
+        document_frequency[term] = sum(
+            1
+            for tokens in tokenized_documents
+            if term in tokens
+        )
+
+    total_documents = len(tokenized_documents)
+
+    # Calculate TF-IDF vectors
+    vectors = []
+
+    for tokens in tokenized_documents:
+
+        term_frequency = {}
+
+        for token in tokens:
+            term_frequency[token] = (
+                term_frequency.get(token, 0) + 1
+            )
+
+        vector = []
+
+        for term in vocabulary:
+
+            tf = term_frequency.get(term, 0)
+
+            # sklearn-style smoothed IDF:
+            # log((1 + n) / (1 + df)) + 1
+            idf = (
+                __import__("math").log(
+                    (1 + total_documents) /
+                    (1 + document_frequency[term])
+                ) + 1
+            )
+
+            vector.append(tf * idf)
+
+        vectors.append(vector)
+
+    # Calculate cosine similarity
+    vector_a = vectors[0]
+    vector_b = vectors[1]
+
+    dot_product = sum(
+        a * b
+        for a, b in zip(vector_a, vector_b)
     )
 
-    tfidf_matrix = vectorizer.fit_transform(documents)
+    magnitude_a = sum(
+        a * a
+        for a in vector_a
+    ) ** 0.5
 
-    similarity = cosine_similarity(
-        tfidf_matrix[0:1],
-        tfidf_matrix[1:2]
+    magnitude_b = sum(
+        b * b
+        for b in vector_b
+    ) ** 0.5
+
+    if magnitude_a == 0 or magnitude_b == 0:
+        return 0
+
+    similarity = dot_product / (
+        magnitude_a * magnitude_b
     )
 
-    score = float(similarity[0][0]) * 100
+    score = similarity * 100
 
     return round(score, 2)
-
-
 
 
     
