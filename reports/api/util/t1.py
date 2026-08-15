@@ -1,10 +1,26 @@
-import os 
+import os
+import nltk
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
+)
+
+NLTK_DATA_PATH = os.path.join(BASE_DIR, "nltk_data")
+
+nltk.data.path.append(NLTK_DATA_PATH)
+
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 import pdfplumber
 from docx import Document
 from striprtf.striprtf import rtf_to_text
 import re
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+# from nltk.corpus import stopwords
+# from nltk.stem import WordNetLemmatizer
 import spacy
 import json
 # from sklearn.feature_extraction.text import TfidfVectorizer
