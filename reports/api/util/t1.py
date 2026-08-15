@@ -3,15 +3,14 @@ import nltk
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(
-        os.path.dirname(
-            os.path.abspath(__file__)
-        )
+        os.path.dirname(os.path.abspath(__file__))
     )
 )
 
-NLTK_DATA_PATH = os.path.join(BASE_DIR, "nltk_data")
+NLTK_DATA = os.path.join(BASE_DIR, "nltk_data")
 
-nltk.data.path.append(NLTK_DATA_PATH)
+if NLTK_DATA not in nltk.data.path:
+    nltk.data.path.insert(0, NLTK_DATA)
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
