@@ -37,11 +37,11 @@ SECRET_KEY = os.environ.get(
     "django-insecure-development-only-key"
 )
 
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-
+DEBUG = False
 ALLOWED_HOSTS = os.environ.get(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
+    "localhost,127.0.0.1",
+    ".vercel.app",
 ).split(",")
 
 
