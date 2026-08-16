@@ -1,9 +1,13 @@
-from django.core.files.storage import FileSystemStorage
+import os
+import tempfile
+
+import cloudinary
+import cloudinary.uploader
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
 
 from api.util.t1 import (
     CheckRoot,
@@ -17,7 +21,11 @@ from .models import ResumeResult
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def FileMessage(request):
-    
+
+    # ==========================================================
+    # GET - Get previously analyzed resumes
+    # ==========================================================
+
     if request.method == "GET":
 
         user = request.user
@@ -43,7 +51,10 @@ def FileMessage(request):
         })
 
 
-    
+    # ==========================================================
+    # POST - Upload and analyze resumes
+    # ==========================================================
+
     uploaded_files = request.FILES.getlist("files")
 
     if not uploaded_files:
@@ -53,11 +64,17 @@ def FileMessage(request):
         )
 
 
-    
+    # ==========================================================
+    # Job description
+    # ==========================================================
+
     description = request.data.get("description", "")
 
 
-    
+    # ==========================================================
+    # Required experience
+    # ==========================================================
+
     requiredExperience = request.data.get("requiredExperience")
 
     if requiredExperience is None:
@@ -76,7 +93,10 @@ def FileMessage(request):
         )
 
 
-    
+    # ==========================================================
+    # Role
+    # ==========================================================
+
     role = request.data.get("role")
 
     if not role:
@@ -97,69 +117,129 @@ def FileMessage(request):
         )
 
 
-    
-    storage = FileSystemStorage()
+    # ==========================================================
+    # Process files
+    # ==========================================================
 
     results = []
 
 
-    
     for uploaded_file in uploaded_files:
 
-        
-        if not CheckRoot(uploaded_file.name):
+        original_filename = uploaded_file.name
+
+
+        # ------------------------------------------------------
+        # Check extension
+        # ------------------------------------------------------
+
+        if not CheckRoot(original_filename):
 
             results.append({
-                "filename": uploaded_file.name,
+                "filename": original_filename,
                 "error": "Unsupported file type."
             })
 
             continue
 
 
+        temp_path = None
+
+
         try:
 
-            
-            filename = storage.save(
-                uploaded_file.name,
-                uploaded_file
-            )
+            # ==================================================
+            # 1. Create temporary file in /tmp
+            # ==================================================
 
-            file_path = storage.path(filename)
+            suffix = os.path.splitext(original_filename)[1]
 
-            file_url = storage.url(filename)
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=suffix
+            ) as temp_file:
+
+                for chunk in uploaded_file.chunks():
+                    temp_file.write(chunk)
+
+                temp_path = temp_file.name
 
 
-            
+            # ==================================================
+            # 2. Analyze resume from temporary file
+            # ==================================================
+
             text_info = AssignAccordingToExt(
-                file_path,
+                temp_path,
                 requiredExperience,
                 role,
                 description
             )
 
 
-            
+            # ==================================================
+            # 3. Upload original file to Cloudinary
+            # ==================================================
+
+            upload_result = cloudinary.uploader.upload(
+                temp_path,
+                resource_type="raw",
+                folder="resume-analyzer/resumes",
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False
+            )
+
+
+            file_url = upload_result.get("secure_url")
+
+
+            # ==================================================
+            # 4. Add result
+            # ==================================================
+
             results.append({
-                "filename": filename,
+                "filename": original_filename,
                 "url": file_url,
                 "textInfo": text_info
             })
 
 
         except ValueError as e:
+
             results.append({
-                "filename": uploaded_file.name,
+                "filename": original_filename,
                 "error": str(e)
             })
+
+
         except Exception as e:
+
             results.append({
-                "filename": uploaded_file.name,
+                "filename": original_filename,
                 "error": str(e)
             })
 
 
-    
+        finally:
+
+            # ==================================================
+            # 5. Delete temporary file
+            # ==================================================
+
+            if temp_path and os.path.exists(temp_path):
+
+                try:
+                    os.remove(temp_path)
+
+                except Exception:
+                    pass
+
+
+    # ==========================================================
+    # Sort by score
+    # ==========================================================
+
     results.sort(
         key=lambda x: x.get("textInfo", {})
         .get("ResumeScores", {})
@@ -168,8 +248,12 @@ def FileMessage(request):
     )
 
 
-    
+    # ==========================================================
+    # Save results to Neon
+    # ==========================================================
+
     rank = 1
+
 
     for result in results:
 
@@ -178,14 +262,47 @@ def FileMessage(request):
         if not text_info:
             continue
 
-        resume_scores = text_info.get("ResumeScores", {})
-        description_scores = resume_scores.get("DescriptionScores", {})
 
-        score = resume_scores.get("TotalResumeScore", 0)
-        match_percentage = description_scores.get("skills_scores", 0)
+        resume_scores = text_info.get(
+            "ResumeScores",
+            {}
+        )
 
-        missing_skills = description_scores.get("MissingSkills", [])
-        top_missing_skill = (missing_skills[0] if missing_skills else None)
+        description_scores = resume_scores.get(
+            "DescriptionScores",
+            {}
+        )
+
+
+        score = resume_scores.get(
+            "TotalResumeScore",
+            0
+        )
+
+
+        match_percentage = description_scores.get(
+            "skills_scores",
+            0
+        )
+
+
+        missing_skills = description_scores.get(
+            "MissingSkills",
+            []
+        )
+
+
+        top_missing_skill = (
+            missing_skills[0]
+            if missing_skills
+            else None
+        )
+
+
+        # ======================================================
+        # Ranking information
+        # ======================================================
+
         result["ranking"] = {
             "Rank": rank,
             "Name": result.get("filename"),
@@ -195,8 +312,12 @@ def FileMessage(request):
         }
 
 
-        
+        # ======================================================
+        # Save to Neon PostgreSQL
+        # ======================================================
+
         ResumeResult.objects.create(
+
             user=request.user,
 
             filename=result.get("filename"),
@@ -227,53 +348,19 @@ def FileMessage(request):
 
         rank += 1
 
+
+    # ==========================================================
+    # Response
+    # ==========================================================
+
     return Response(
         {
             "message": "Files processed successfully.",
+
             "total_files": len(uploaded_files),
+
             "results": results
         },
+
         status=status.HTTP_201_CREATED,
     )
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def GetSingleResume(request, resume_id):
-    try:
-        if request.method == "GET":
-            user = request.user
-
-            if not resume_id:
-                return Response(
-                    {"error": "resume_id is required."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            try:
-                resume_result = ResumeResult.objects.get(
-                    id=resume_id, user=user
-                )
-            except ResumeResult.DoesNotExist:
-                return Response(
-                    {"error": "Resume not found."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-            data = {
-                "filename": resume_result.filename,
-                "url": resume_result.url,
-                "role": resume_result.role,
-                "description": resume_result.description,
-                "required_experience": resume_result.required_experience,
-                "text_info": resume_result.text_info,
-                "rank": resume_result.rank,
-                "score": resume_result.score,
-                "match_percentage": resume_result.match_percentage,
-                "top_missing_skill": resume_result.top_missing_skill,
-                "error": resume_result.error,
-                "created_at": resume_result.created_at
-            }
-
-            return Response({"data": data}, status=status.HTTP_200_OK)
-    except Exception as error:
-        print(error)

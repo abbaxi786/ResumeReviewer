@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import cloudinary
+import dj_database_url
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
@@ -37,6 +39,11 @@ SECRET_KEY = os.environ.get(
     "django-insecure-development-only-key"
 )
 
+
+CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
+
+cloudinary.config(secure=True)
+
 DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get(
@@ -57,7 +64,17 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     "corsheaders",
+    'cloudinary',
 ]
+
+# import cloudinary
+
+# cloudinary.config(
+#     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+#     api_key=os.environ.get("CLOUDINARY_API_KEY"),
+#     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+#     secure=True,
+# )
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -113,7 +130,6 @@ WSGI_APPLICATION = 'doc_r.wsgi.application'
 #     }
 # }
 
-import dj_database_url
 
 DATABASES = {
     "default": dj_database_url.parse(
