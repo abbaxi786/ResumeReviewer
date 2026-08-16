@@ -169,6 +169,8 @@ def FileMessage(request):
             # 2. Analyze resume from temporary file
             # ==================================================
 
+            print("STEP 1: Temporary file created")
+
             text_info = AssignAccordingToExt(
                 temp_path,
                 requiredExperience,
@@ -176,10 +178,7 @@ def FileMessage(request):
                 description
             )
 
-
-            # ==================================================
-            # 3. Upload original file to Cloudinary
-            # ==================================================
+            print("STEP 2: Resume analyzed")
 
             upload_result = cloudinary.uploader.upload(
                 temp_path,
@@ -190,6 +189,7 @@ def FileMessage(request):
                 overwrite=False
             )
 
+            print("STEP 3: Cloudinary upload successful")
 
             file_url = upload_result.get("secure_url")
 
