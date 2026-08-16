@@ -364,3 +364,46 @@ def FileMessage(request):
 
         status=status.HTTP_201_CREATED,
     )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def GetSingleResume(request, resume_id):
+    try:
+        if request.method == "GET":
+            user = request.user
+
+            if not resume_id:
+                return Response(
+                    {"error": "resume_id is required."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            try:
+                resume_result = ResumeResult.objects.get(
+                    id=resume_id, user=user
+                )
+            except ResumeResult.DoesNotExist:
+                return Response(
+                    {"error": "Resume not found."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            data = {
+                "filename": resume_result.filename,
+                "url": resume_result.url,
+                "role": resume_result.role,
+                "description": resume_result.description,
+                "required_experience": resume_result.required_experience,
+                "text_info": resume_result.text_info,
+                "rank": resume_result.rank,
+                "score": resume_result.score,
+                "match_percentage": resume_result.match_percentage,
+                "top_missing_skill": resume_result.top_missing_skill,
+                "error": resume_result.error,
+                "created_at": resume_result.created_at
+            }
+
+            return Response({"data": data}, status=status.HTTP_200_OK)
+    except Exception as error:
+        print(error)
