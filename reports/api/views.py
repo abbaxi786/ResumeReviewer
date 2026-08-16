@@ -180,6 +180,8 @@ def FileMessage(request):
 
             print("STEP 2: Resume analyzed")
 
+            print("STEP 3: Starting Cloudinary upload")
+
             upload_result = cloudinary.uploader.upload(
                 temp_path,
                 resource_type="raw",
@@ -190,6 +192,8 @@ def FileMessage(request):
             )
 
             print("STEP 3: Cloudinary upload successful")
+            print("Cloudinary public_id:", upload_result.get("public_id"))
+            print("Cloudinary URL:", upload_result.get("secure_url"))
 
             file_url = upload_result.get("secure_url")
 
