@@ -192,11 +192,10 @@ def FileMessage(request):
             )
 
             print("STEP 3: Cloudinary upload successful")
-            print("Cloudinary public_id:", upload_result.get("public_id"))
-            print("Cloudinary URL:", upload_result.get("secure_url"))
+            print("PUBLIC ID:", upload_result.get("public_id"))
+            print("SECURE URL:", upload_result.get("secure_url"))
 
             file_url = upload_result.get("secure_url")
-
 
             # ==================================================
             # 4. Add result
@@ -218,6 +217,8 @@ def FileMessage(request):
 
 
         except Exception as e:
+
+            print("CLOUDINARY/PROCESSING ERROR:", repr(e))
 
             results.append({
                 "filename": original_filename,
